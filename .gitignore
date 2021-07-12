@@ -1,4 +1,8 @@
 build/
 build
+debug
+release
+.vs
+*.vcxproj*
 CMakeLists.txt.*
 *.user

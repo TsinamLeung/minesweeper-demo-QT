@@ -5,6 +5,8 @@
 #include <QSet>
 #include <QPair>
 
+unsigned long randomUpper(long);
+
 enum type_piece {
     empty = 0,
     one,
@@ -18,19 +20,22 @@ enum type_piece {
     mine,
 };
 
-// structure that indidate the piece on board
+// structure that indicate the piece on board
 class Piece{
 public:
-    type_piece Type = empty;
-    bool Discover = false;
-    bool Flag = false;
+    type_piece Type;
+    bool Discover;
+	bool Flag;
+	Piece(type_piece t = empty,bool d = false,bool f = false) : Type(t),Discover(d),Flag(f) {}
 };
 
 class Board {
 public:
-    void CreateBoard(int row,int col,int num_mine,int clicked_row,int clicked_col);
+    void CreateBoard(int row,int col,int num_mine,int clicked_x,int clicked_y);
 protected:
-    QSet<QPair<int,int>> generateMine(int row,int col,int num_mine,int clicked_row,int clicked_col);
+    QSet<QPair<int,int>> generateMine(int row,int col,int num_mine,int clicked_x,int clicked_y);
+	void setMineCount(int x, int y);
+	void bfsExplore(int x, int y);
 private:
     QVector<QVector<Piece>> _board;
 };
