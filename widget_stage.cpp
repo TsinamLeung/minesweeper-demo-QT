@@ -5,5 +5,8 @@ WidgetStage::WidgetStage(QWidget* parent /*= nullptr*/)
 {
 	setStyleSheet("#stage { background-color: white; border: none; }");
 	ResetLayout();
+	auto f = new QFrame(this);
+	f->setFrameShape(QFrame::Box);
+	layout->addWidget(f);
 }
 
