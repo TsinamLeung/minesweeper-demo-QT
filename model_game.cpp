@@ -1,7 +1,4 @@
 #include "model_game.h"
-#include <QTime>
-#include <QDebug>
-#include <QQueue>
 
 unsigned long randomUpper(long high) {
 	qsrand(QTime::currentTime().msec());
@@ -11,7 +8,7 @@ unsigned long randomUpper(long high) {
 
 void Board::CreateBoard(int row, int col, int num_mine, int clicked_x, int clicked_y)
 {
-	QSet<QPair<int, int>> mines = generateMine(row, col, num_mine, clicked_x, clicked_y);
+	auto mines = generateMine(row, col, num_mine, clicked_x, clicked_y);
 	_board.resize(row);
 	for (int r = 0; r < row; ++r) {
 		auto& container_piece = _board[r];
@@ -30,19 +27,26 @@ void Board::CreateBoard(int row, int col, int num_mine, int clicked_x, int click
 	bfsExplore(clicked_x, clicked_y);
 }
 
-QSet<QPair<int, int>> Board::generateMine(int row, int col, int num_mine, int clicked_x, int clicked_y)
+QList<pos> Board::generateMine(int row, int col, int num_mine, int clicked_x, int clicked_y)
 {
-	auto ret = QSet<QPair<int, int>>();
+	auto ret = QList<pos>();
 	num_mine = num_mine > (row * col - 1) ? row * col - 1 : num_mine;
-	while (num_mine) {
-		int x = randomUpper(row - 1);
-		int y = randomUpper(col - 1);
-		bool can_place = !(x == clicked_x && y == clicked_y);
-		if (!ret.contains(qMakePair(x, y)) && can_place)
-		{
-			ret.insert(qMakePair(x, y));
-			--num_mine;
+
+	QVector<pos> pos_pool;
+	for (int x = 0; x < row; ++x) {
+		for (int y = 0; y < col; ++y) {
+			bool cannot_place = (x == clicked_x && y == clicked_y);
+			if (cannot_place) {
+				continue;
+			}
+			pos_pool.push_back(pos(x, y));
 		}
+	}
+	while (num_mine) {
+		int index = randomUpper(pos_pool.size() - 1);
+		ret.append(pos_pool[index]);
+		pos_pool.removeAt(index);
+		--num_mine;
 	}
 	// another way to avoid too random wasting is to make the set to map,[row => col]
 	// if counts of row equals to col,which means,current col is full of mine,then skip it
@@ -73,7 +77,6 @@ void Board::bfsExplore(int x, int y)
 	const int& row_size = _board.size();
 	const int& col_size = _board.isEmpty() ? 0 : _board.first().size();
 	if (row_size > 0 && col_size > 0) {
-		using pos = QPair<int, int>;
 		QQueue<pos> q;
 		q.enqueue(pos(x, y));
 		while (!q.isEmpty()) {

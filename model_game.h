@@ -4,9 +4,14 @@
 #include <QVector>
 #include <QSet>
 #include <QPair>
+#include <QList>
+#include <QTime>
+#include <QDebug>
+#include <QQueue>
 
 unsigned long randomUpper(long);
 
+using pos = QPair<int, int>;
 enum type_piece {
     empty = 0,
     one,
@@ -33,7 +38,7 @@ class Board {
 public:
     void CreateBoard(int row,int col,int num_mine,int clicked_x,int clicked_y);
 protected:
-    QSet<QPair<int,int>> generateMine(int row,int col,int num_mine,int clicked_x,int clicked_y);
+    QList<pos> generateMine(int row,int col,int num_mine,int clicked_x,int clicked_y);
 	void setMineCount(int x, int y);
 	void bfsExplore(int x, int y);
 private:
