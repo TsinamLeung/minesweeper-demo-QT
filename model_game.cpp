@@ -3,10 +3,11 @@
 
 void Board::CreateBoard(int row, int col, int num_mine,int clicked_row,int clicked_col)
 {
-    auto mines = generateMine(row,col,num_mine,clicked_row,clicked_col);
+    QSet<QPair<int,int>> mines = generateMine(row,col,num_mine,clicked_row,clicked_col);
+
 }
 
-QSet<QPair<int, int> > Board::generateMine(int row, int col, int num_mine, int clicked_row, int clicked_col)
+QSet<QPair<int, int>> Board::generateMine(int row, int col, int num_mine, int clicked_row, int clicked_col)
 {
     auto ret = QSet<QPair<int,int>>();
 
