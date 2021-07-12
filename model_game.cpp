@@ -6,8 +6,13 @@ unsigned long randomUpper(long high) {
 }
 
 
-void Board::CreateBoard(int row, int col, int num_mine, int clicked_x, int clicked_y)
+Board::Board(int row, int col, int num_mine, int clicked_x, int clicked_y) 
+	: row(row), col(col), num_mine(num_mine)
 {
+	if (num_mine > (row * col - 1)) {
+		num_mine = row * col - 1;
+		this->num_mine = num_mine;
+	}
 	auto mines = generateMine(row, col, num_mine, clicked_x, clicked_y);
 	_board.resize(row);
 	for (int r = 0; r < row; ++r) {
@@ -20,11 +25,37 @@ void Board::CreateBoard(int row, int col, int num_mine, int clicked_x, int click
 	foreach(auto& m, mines) {
 		int r = m.first;
 		int c = m.second;
-		_board[r][c].Type = mine;
-		setMineCount(r, c);
+		_board[r][c].Type = MINE;
+		countMine(r, c);
 	}
 
 	bfsExplore(clicked_x, clicked_y);
+}
+
+void Board::Dug(int x, int y)
+{
+	auto& piece = _board[x][y];
+	if (!piece.Discover && !piece.Flag) {
+		if (piece.Type == MINE) {
+			this->state = DEAD;
+			return;
+		}
+		bfsExplore(x, y);
+		if (discoverd_blocks == (row * col - num_mine)) {
+			state = WIN;
+			return;
+		}
+	}
+}
+
+void Board::PlaceFlag(int x, int y)
+{
+	_board[x][y].Flag = true;
+}
+
+void Board::PlugFlag(int x, int y)
+{
+	_board[x][y].Flag = false;
 }
 
 QList<pos> Board::generateMine(int row, int col, int num_mine, int clicked_x, int clicked_y)
@@ -48,13 +79,11 @@ QList<pos> Board::generateMine(int row, int col, int num_mine, int clicked_x, in
 		pos_pool.removeAt(index);
 		--num_mine;
 	}
-	// another way to avoid too random wasting is to make the set to map,[row => col]
-	// if counts of row equals to col,which means,current col is full of mine,then skip it
-	// make sure only the unplaced piece would be in next random
+	// using remove at might cause performance issue
 	return ret;
 }
 
-void Board::setMineCount(int x, int y)
+void Board::countMine(int x, int y)
 {
 	for (int i = x - 1; i <= x + 1; ++i) {
 		if (i < 0 || i >= _board.size()) {
@@ -65,7 +94,7 @@ void Board::setMineCount(int x, int y)
 				continue;
 			}
 			auto& type = _board[i][j].Type;
-			if ((int)type < (int)mine) {
+			if ((int)type < (int)MINE) {
 				type = (type_piece)(_board[i][j].Type + 1);
 			}
 		}
@@ -88,11 +117,11 @@ void Board::bfsExplore(int x, int y)
 				continue;
 			}
 			// do not discover when pointing to a mine
-			if (_board[cur_x][cur_y].Type == mine || _board[cur_x][cur_y].Discover) {
+			if (_board[cur_x][cur_y].Type == MINE || _board[cur_x][cur_y].Discover) {
 				continue;
 			}
 			_board[cur_x][cur_y].Discover = true;
-
+			discoverd_blocks++;
 			//up
 			q.push_back(pos(cur_x - 1, cur_y));
 			//down

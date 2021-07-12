@@ -11,11 +11,13 @@ CONFIG += c++11
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    model_game.cpp
+    model_game.cpp \
+    widget_stage.cpp
 
 HEADERS += \
     mainwindow.h \
-    model_game.h
+    model_game.h \
+    widget_stage.h
 
 FORMS += \
     mainwindow.ui

@@ -10,37 +10,137 @@
 #define UI_MAINWINDOW_H
 
 #include <QtCore/QVariant>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPushButton>
 #include <QtWidgets/QStatusBar>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include "widget_stage.h"
 
 QT_BEGIN_NAMESPACE
 
 class Ui_MainWindow
 {
 public:
+    QAction *actionEasy;
+    QAction *actionMiddle;
+    QAction *actionHard;
+    QAction *actionCustom;
+    QAction *actionQuit;
     QWidget *centralwidget;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
+    QLCDNumber *timer;
+    QPushButton *pushButton;
+    QLCDNumber *counter;
+    WidgetStage *stage;
     QMenuBar *menubar;
+    QMenu *menuOptions;
+    QMenu *menuLevel;
     QStatusBar *statusbar;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(800, 600);
+        MainWindow->resize(512, 347);
+        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
+        MainWindow->setSizePolicy(sizePolicy);
+        MainWindow->setMinimumSize(QSize(512, 347));
+        actionEasy = new QAction(MainWindow);
+        actionEasy->setObjectName(QString::fromUtf8("actionEasy"));
+        actionMiddle = new QAction(MainWindow);
+        actionMiddle->setObjectName(QString::fromUtf8("actionMiddle"));
+        actionHard = new QAction(MainWindow);
+        actionHard->setObjectName(QString::fromUtf8("actionHard"));
+        actionCustom = new QAction(MainWindow);
+        actionCustom->setObjectName(QString::fromUtf8("actionCustom"));
+        actionQuit = new QAction(MainWindow);
+        actionQuit->setObjectName(QString::fromUtf8("actionQuit"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+        verticalLayout = new QVBoxLayout(centralwidget);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setSpacing(5);
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        horizontalLayout->setSizeConstraint(QLayout::SetDefaultConstraint);
+        horizontalLayout->setContentsMargins(-1, -1, -1, 5);
+        timer = new QLCDNumber(centralwidget);
+        timer->setObjectName(QString::fromUtf8("timer"));
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(timer->sizePolicy().hasHeightForWidth());
+        timer->setSizePolicy(sizePolicy1);
+        QFont font;
+        font.setFamily(QString::fromUtf8("Lucida Sans"));
+        timer->setFont(font);
+
+        horizontalLayout->addWidget(timer);
+
+        pushButton = new QPushButton(centralwidget);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        sizePolicy1.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
+        pushButton->setSizePolicy(sizePolicy1);
+        pushButton->setFont(font);
+
+        horizontalLayout->addWidget(pushButton);
+
+        counter = new QLCDNumber(centralwidget);
+        counter->setObjectName(QString::fromUtf8("counter"));
+        sizePolicy1.setHeightForWidth(counter->sizePolicy().hasHeightForWidth());
+        counter->setSizePolicy(sizePolicy1);
+        counter->setFont(font);
+
+        horizontalLayout->addWidget(counter);
+
+
+        verticalLayout->addLayout(horizontalLayout);
+
+        stage = new WidgetStage(centralwidget);
+        stage->setObjectName(QString::fromUtf8("stage"));
+        stage->setMinimumSize(QSize(0, 0));
+        stage->setMouseTracking(true);
+        stage->setFrameShape(QFrame::StyledPanel);
+        stage->setFrameShadow(QFrame::Raised);
+
+        verticalLayout->addWidget(stage);
+
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
+        menubar->setGeometry(QRect(0, 0, 512, 21));
+        menuOptions = new QMenu(menubar);
+        menuOptions->setObjectName(QString::fromUtf8("menuOptions"));
+        menuLevel = new QMenu(menuOptions);
+        menuLevel->setObjectName(QString::fromUtf8("menuLevel"));
         MainWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(MainWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
         MainWindow->setStatusBar(statusbar);
 
+        menubar->addAction(menuOptions->menuAction());
+        menuOptions->addAction(menuLevel->menuAction());
+        menuOptions->addAction(actionQuit);
+        menuLevel->addSeparator();
+        menuLevel->addAction(actionEasy);
+        menuLevel->addSeparator();
+        menuLevel->addAction(actionMiddle);
+        menuLevel->addAction(actionHard);
+        menuLevel->addAction(actionCustom);
+
         retranslateUi(MainWindow);
+        QObject::connect(actionQuit, SIGNAL(triggered()), MainWindow, SLOT(close()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -48,6 +148,14 @@ public:
     void retranslateUi(QMainWindow *MainWindow)
     {
         MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
+        actionEasy->setText(QApplication::translate("MainWindow", "Easy", nullptr));
+        actionMiddle->setText(QApplication::translate("MainWindow", "Middle", nullptr));
+        actionHard->setText(QApplication::translate("MainWindow", "Hard", nullptr));
+        actionCustom->setText(QApplication::translate("MainWindow", "Custom", nullptr));
+        actionQuit->setText(QApplication::translate("MainWindow", "Quit", nullptr));
+        pushButton->setText(QApplication::translate("MainWindow", "Reset and Status Displaying", nullptr));
+        menuOptions->setTitle(QApplication::translate("MainWindow", "Options", nullptr));
+        menuLevel->setTitle(QApplication::translate("MainWindow", "Level", nullptr));
     } // retranslateUi
 
 };
