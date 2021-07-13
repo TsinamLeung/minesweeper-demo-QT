@@ -14,7 +14,8 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
-
+public slots:
+	void setWindowSize(int w, int h) { this->setFixedSize(w, h); };
 private:
     Ui::MainWindow *ui;
 };

@@ -6,24 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>512</width>
-    <height>347</height>
+    <width>514</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="minimumSize">
    <size>
-    <width>512</width>
-    <height>347</height>
+    <width>514</width>
+    <height>546</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>HelloSweeper</string>
+  </property>
+  <property name="animated">
+   <bool>true</bool>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -55,6 +58,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="pushButton">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -68,6 +74,15 @@
         </property>
         <property name="text">
          <string>Reset and Status Displaying</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
+        </property>
+        <property name="default">
+         <bool>false</bool>
+        </property>
+        <property name="flat">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -90,20 +105,26 @@
     </item>
     <item>
      <widget class="WidgetStage" name="stage">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>0</height>
-       </size>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
       </property>
       <property name="mouseTracking">
        <bool>true</bool>
       </property>
+      <property name="tabletTracking">
+       <bool>false</bool>
+      </property>
       <property name="frameShape">
-       <enum>QFrame::StyledPanel</enum>
+       <enum>QFrame::Box</enum>
       </property>
       <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>2</number>
       </property>
      </widget>
     </item>
@@ -114,7 +135,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>512</width>
+     <width>514</width>
      <height>21</height>
     </rect>
    </property>
@@ -171,6 +192,9 @@
    <extends>QFrame</extends>
    <header>widget_stage.h</header>
    <container>1</container>
+   <slots>
+    <slot>SetDifficult()</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
@@ -188,6 +212,54 @@
     <hint type="destinationlabel">
      <x>399</x>
      <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionEasy</sender>
+   <signal>triggered()</signal>
+   <receiver>stage</receiver>
+   <slot>SetDifficult()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>288</x>
+     <y>267</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionMiddle</sender>
+   <signal>triggered()</signal>
+   <receiver>stage</receiver>
+   <slot>SetDifficult()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>288</x>
+     <y>267</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionHard</sender>
+   <signal>triggered()</signal>
+   <receiver>stage</receiver>
+   <slot>SetDifficult()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>288</x>
+     <y>267</y>
     </hint>
    </hints>
   </connection>

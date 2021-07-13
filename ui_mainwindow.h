@@ -49,13 +49,14 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(512, 347);
-        QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        MainWindow->resize(514, 546);
+        QSizePolicy sizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(MainWindow->sizePolicy().hasHeightForWidth());
         MainWindow->setSizePolicy(sizePolicy);
-        MainWindow->setMinimumSize(QSize(512, 347));
+        MainWindow->setMinimumSize(QSize(514, 546));
+        MainWindow->setAnimated(true);
         actionEasy = new QAction(MainWindow);
         actionEasy->setObjectName(QString::fromUtf8("actionEasy"));
         actionMiddle = new QAction(MainWindow);
@@ -90,9 +91,12 @@ public:
 
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        pushButton->setEnabled(true);
         sizePolicy1.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
         pushButton->setSizePolicy(sizePolicy1);
         pushButton->setFont(font);
+        pushButton->setCheckable(false);
+        pushButton->setFlat(false);
 
         horizontalLayout->addWidget(pushButton);
 
@@ -109,17 +113,23 @@ public:
 
         stage = new WidgetStage(centralwidget);
         stage->setObjectName(QString::fromUtf8("stage"));
-        stage->setMinimumSize(QSize(0, 0));
+        QSizePolicy sizePolicy2(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(stage->sizePolicy().hasHeightForWidth());
+        stage->setSizePolicy(sizePolicy2);
         stage->setMouseTracking(true);
-        stage->setFrameShape(QFrame::StyledPanel);
-        stage->setFrameShadow(QFrame::Raised);
+        stage->setTabletTracking(false);
+        stage->setFrameShape(QFrame::Box);
+        stage->setFrameShadow(QFrame::Plain);
+        stage->setLineWidth(2);
 
         verticalLayout->addWidget(stage);
 
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 512, 21));
+        menubar->setGeometry(QRect(0, 0, 514, 21));
         menuOptions = new QMenu(menubar);
         menuOptions->setObjectName(QString::fromUtf8("menuOptions"));
         menuLevel = new QMenu(menuOptions);
@@ -141,13 +151,19 @@ public:
 
         retranslateUi(MainWindow);
         QObject::connect(actionQuit, SIGNAL(triggered()), MainWindow, SLOT(close()));
+        QObject::connect(actionEasy, SIGNAL(triggered()), stage, SLOT(SetDifficult()));
+        QObject::connect(actionMiddle, SIGNAL(triggered()), stage, SLOT(SetDifficult()));
+        QObject::connect(actionHard, SIGNAL(triggered()), stage, SLOT(SetDifficult()));
+
+        pushButton->setDefault(false);
+
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
 
     void retranslateUi(QMainWindow *MainWindow)
     {
-        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "MainWindow", nullptr));
+        MainWindow->setWindowTitle(QApplication::translate("MainWindow", "HelloSweeper", nullptr));
         actionEasy->setText(QApplication::translate("MainWindow", "Easy", nullptr));
         actionMiddle->setText(QApplication::translate("MainWindow", "Middle", nullptr));
         actionHard->setText(QApplication::translate("MainWindow", "Hard", nullptr));

@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 	// can also initialize the other custom widget here
-
+	connect(ui->stage, SIGNAL(resizeWindow(int,int)), this, SLOT(setWindowSize(int,int)));
 }
 
 MainWindow::~MainWindow()
