@@ -109,7 +109,7 @@ void Board::bfsExplore(int x, int y)
 		QQueue<pos> q;
 		q.enqueue(pos(x, y));
 		while (!q.isEmpty()) {
-			auto& cur_pos = q.dequeue();
+            const auto& cur_pos = q.dequeue();
 			auto& cur_x = cur_pos.first;
 			auto& cur_y = cur_pos.second;
 

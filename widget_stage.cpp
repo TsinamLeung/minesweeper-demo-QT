@@ -36,7 +36,11 @@ void WidgetStage::SetMapSize(int row, int col, int num_mine)
 	first_click = true;
 	this->setFixedHeight(50 * row);
 	this->setFixedWidth(50 * col);
-	emit resizeWindow(40 + 50 * row, 180 + 50 * col);
+    emit resizeWindow(50 * row,145 + 50 * col);
+
+    this->row = row;
+    this->col = col;
+    this->num_mine = num_mine;
 
 	for (int x = 0; x < row; ++x) {
 		for (int y = 0; y < col; ++y) {
@@ -72,8 +76,7 @@ void WidgetStage::mouseMoveEvent(QMouseEvent * event)
 					btn->ShowClicked();
 				auto nearby_buttons = getAroundInLayout(clicked_index);
 
-
-				for (ButtonGame* a : nearby_buttons)
+                foreach (ButtonGame* a , nearby_buttons)
 				{
 					if(a == element) 
 						continue;

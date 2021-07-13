@@ -15,7 +15,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 public slots:
-	void setWindowSize(int w, int h) { this->setFixedSize(w, h); };
+    void setWindowSize(int w, int h) {
+        this->setMinimumWidth(w);
+        this->setMinimumHeight(h);
+    }
 private:
     Ui::MainWindow *ui;
 };
