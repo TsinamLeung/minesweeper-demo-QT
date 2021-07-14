@@ -339,7 +339,7 @@ void WidgetStage::update()
 		emit changeState("You lose!!");
 		timer->stop();
 	}
-	emit displayFlagCount(game_board->FlagCount());
+	emit displayFlagCount(num_mine - game_board->FlagCount());
 
 	for (int i = 0; i < layout->count(); ++i)
 	{

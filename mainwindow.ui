@@ -250,6 +250,7 @@ color: rgb(255, 64, 30);</string>
     <signal>increaseTime(int)</signal>
     <slot>SetDifficult()</slot>
     <slot>SetMapSize()</slot>
+    <slot>SetMapSize(int,int,int)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -367,5 +368,41 @@ color: rgb(255, 64, 30);</string>
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionCustom</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>difficultDialog()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>256</x>
+     <y>272</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MainWindow</sender>
+   <signal>setMap(int,int,int)</signal>
+   <receiver>stage</receiver>
+   <slot>SetMapSize(int,int,int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>290</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <slots>
+  <signal>setMap(int,int,int)</signal>
+  <slot>difficultDialog()</slot>
+ </slots>
 </ui>

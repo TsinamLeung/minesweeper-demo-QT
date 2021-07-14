@@ -172,6 +172,8 @@ public:
         QObject::connect(resetButton, SIGNAL(released()), stage, SLOT(SetMapSize()));
         QObject::connect(stage, SIGNAL(displayFlagCount(int)), counter, SLOT(display(int)));
         QObject::connect(stage, SIGNAL(increaseTime(int)), timer, SLOT(display(int)));
+        QObject::connect(actionCustom, SIGNAL(triggered()), MainWindow, SLOT(difficultDialog()));
+        QObject::connect(MainWindow, SIGNAL(setMap(int,int,int)), stage, SLOT(SetMapSize(int,int,int)));
 
         resetButton->setDefault(false);
 
