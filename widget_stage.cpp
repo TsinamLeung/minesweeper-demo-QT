@@ -34,16 +34,18 @@ void WidgetStage::SetMapSize(int row, int col, int num_mine)
 {
 	ResetLayout();
 	first_click = true;
-	this->setFixedHeight(50 * row);
-	this->setFixedWidth(50 * col);
-    emit resizeWindow(50 * row,145 + 50 * col);
+	this->setFixedHeight(42 * row);
+	this->setFixedWidth(42 * col);
+	emit resizeWindow(45 * col, 180 + 45 * row);
 
-    this->row = row;
-    this->col = col;
-    this->num_mine = num_mine;
+	this->row = row;
+	this->col = col;
+	this->num_mine = num_mine;
 
-	for (int x = 0; x < row; ++x) {
-		for (int y = 0; y < col; ++y) {
+	for (int x = 0; x < row; ++x)
+	{
+		for (int y = 0; y < col; ++y)
+		{
 			layout->addWidget(new ButtonGame(this), x, y, 1, 1);
 		}
 	}
@@ -53,34 +55,40 @@ void WidgetStage::SetMapSize(int row, int col, int num_mine)
 void WidgetStage::SetDifficult()
 {
 	QString action_name = dynamic_cast<QAction*>(sender())->text();
-	if (action_name == "Easy") {
+	if (action_name == "Easy")
+	{
 		SetMapSize(9, 9, 10);
 	}
-	else if (action_name == "Middle") {
+	else if (action_name == "Middle")
+	{
 		SetMapSize(16, 16, 40);
 	}
-	else if (action_name == "Hard") {
+	else if (action_name == "Hard")
+	{
 		SetMapSize(16, 30, 99);
 	}
 }
 
 void WidgetStage::mouseMoveEvent(QMouseEvent * event)
 {
-	if (hold_left | hold_right) {
+	if (hold_left | hold_right)
+	{
 		const auto& element = childAt(event->pos());
-		if (element) {
+		if (element)
+		{
 			const auto& clicked_index = layout->indexOf(element);
-			if (clicked_index >= 0) {
+			if (clicked_index >= 0)
+			{
 				ButtonGame* btn = dynamic_cast<ButtonGame*>(element);
-				if(!btn->isClicking())
+				if (!btn->isClicking())
 					btn->ShowClicked();
 				auto nearby_buttons = getAroundInLayout(clicked_index);
 
-                foreach (ButtonGame* a , nearby_buttons)
+				foreach(ButtonGame* a, nearby_buttons)
 				{
-					if(a == element) 
+					if (a == element)
 						continue;
-					if(a->isClicking())
+					if (a->isClicking())
 						a->HideClicked();
 				}
 
@@ -95,13 +103,16 @@ void WidgetStage::mousePressEvent(QMouseEvent * event)
 {
 	qDebug() << "Press: " << event->button();
 	const auto& element = childAt(event->pos());
-	if (element) {
+	if (element)
+	{
 		auto btn = dynamic_cast<ButtonGame*>(element);
-		if (!btn->isClicking()) {
+		if (!btn->isClicking())
+		{
 			btn->HideClicked();
 		}
 	}
-	switch (event->button()) {
+	switch (event->button())
+	{
 	case Qt::LeftButton:
 		hold_left = true;
 		break;
@@ -115,54 +126,97 @@ void WidgetStage::mouseReleaseEvent(QMouseEvent * event)
 {
 	qDebug() << "Release: " << event->button();
 	const auto& element = childAt(event->pos());
-	if (element) {
+	if (element)
+	{
 		auto btn = dynamic_cast<ButtonGame*>(element);
-		if (btn->isClicking()) {
+		if (btn->isClicking())
+		{
 			btn->HideClicked();
 		}
-	}
-	if (hold_left && hold_right) {
 
-	}
-	else if (hold_left) {
+		int index = layout->indexOf(element);
+		int pos_x = index / col;
+		int pos_y = index % col;
 
-	}
-	else if (hold_right) {
+		if (hold_left && hold_right)
+		{
 
+		}
+		else if (hold_left)
+		{
+
+			if (first_click)
+			{
+				game_board.reset(new Board(row, col, num_mine, pos_x, pos_y));
+				first_click = false;
+			}
+			update();
+		}
+		else if (hold_right)
+		{
+			game_board->ToggleFlag(pos_x, pos_y);
+			update();
+		}
 	}
 
 	hold_left = hold_right = false;
 }
 
-QSet<ButtonGame*> WidgetStage::getAroundInLayout(ButtonGame* center,int radius /* = 1*/)
+QSet<ButtonGame*> WidgetStage::getAroundInLayout(ButtonGame* center, int radius /* = 1*/)
 {
 	int center_index = layout->indexOf(center);
 	return getAroundInLayout(center_index);
 }
 
-QSet<ButtonGame*> WidgetStage::getAroundInLayout(int center_index,int radius /* = 1*/)
+QSet<ButtonGame*> WidgetStage::getAroundInLayout(int center_index, int radius /* = 1*/)
 {
 	auto ret = QSet<ButtonGame*>();
-	if (center_index >= 0) {
-		int x = center_index / col;
-		int y = center_index  % col;
+	if (center_index >= 0)
+	{
+		int pos_x = center_index / col;
+		int pos_y = center_index  % col;
 
 		// full spec
-		for (int i = x - radius; i <= x + radius; ++i) {
-			if (i < 0 || i >= row) {
+		for (int i = pos_x - radius; i <= pos_x + radius; ++i)
+		{
+			if (i < 0 || i >= row)
+			{
 				continue;
 			}
-			for (int j = y - radius; j <= y + radius; ++j) {
-				if (j < 0 || j >= col) {
+			for (int j = pos_y - radius; j <= pos_y + radius; ++j)
+			{
+				if (j < 0 || j >= col)
+				{
 					continue;
 				}
 
 				ButtonGame* res = dynamic_cast<ButtonGame*>(layout->itemAt(i * col + j)->widget());
-				if (res) {
+				if (res)
+				{
 					ret.insert(res);
 				}
 			}
 		}
 	}
 	return ret;
+}
+
+void WidgetStage::update()
+{
+
+	for(int i = 0;i < layout->count();++i)
+	{
+		ButtonGame* btn = dynamic_cast<ButtonGame*>(layout->itemAt(i)->widget());
+		if (!btn)
+		{
+			continue;
+		}
+		int pos_x = i / col;
+		int pos_y = i % col;
+		if (game_board->isDiscover(pos_x, pos_y))
+		{
+			btn->setVisible(false);
+		}
+
+	}
 }

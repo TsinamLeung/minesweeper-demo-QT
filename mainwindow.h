@@ -18,6 +18,7 @@ public slots:
     void setWindowSize(int w, int h) {
         this->setMinimumWidth(w);
         this->setMinimumHeight(h);
+		this->resize(0, 0);
     }
 private:
     Ui::MainWindow *ui;

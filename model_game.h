@@ -43,10 +43,11 @@ public:
 class Board {
 public:
     Board(int row,int col,int num_mine,int clicked_x,int clicked_y);
-	void Dug(int x,int y);
-	void PlaceFlag(int x, int y);
-	void PlugFlag(int x, int y);
+	void Dug(int pos_x,int pos_y);
+	void ToggleFlag(int& pos_x, int& pos_y);
+	bool isDiscover(int& pos_x, int& pos_y);
 	state_game state = GAMING;
+
 protected:
     QList<pos> generateMine(int row,int col,int num_mine,int clicked_x,int clicked_y);
 	void countMine(int x, int y);

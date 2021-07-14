@@ -69,8 +69,15 @@ public:
         actionQuit->setObjectName(QString::fromUtf8("actionQuit"));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
+        QSizePolicy sizePolicy1(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(centralwidget->sizePolicy().hasHeightForWidth());
+        centralwidget->setSizePolicy(sizePolicy1);
         verticalLayout = new QVBoxLayout(centralwidget);
+        verticalLayout->setSpacing(5);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        verticalLayout->setContentsMargins(3, 10, 3, 10);
         horizontalLayout = new QHBoxLayout();
         horizontalLayout->setSpacing(5);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
@@ -78,11 +85,11 @@ public:
         horizontalLayout->setContentsMargins(-1, -1, -1, 5);
         timer = new QLCDNumber(centralwidget);
         timer->setObjectName(QString::fromUtf8("timer"));
-        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        sizePolicy1.setHorizontalStretch(0);
-        sizePolicy1.setVerticalStretch(0);
-        sizePolicy1.setHeightForWidth(timer->sizePolicy().hasHeightForWidth());
-        timer->setSizePolicy(sizePolicy1);
+        QSizePolicy sizePolicy2(QSizePolicy::Maximum, QSizePolicy::Maximum);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(timer->sizePolicy().hasHeightForWidth());
+        timer->setSizePolicy(sizePolicy2);
         QFont font;
         font.setFamily(QString::fromUtf8("Lucida Sans"));
         timer->setFont(font);
@@ -92,8 +99,8 @@ public:
         pushButton = new QPushButton(centralwidget);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
         pushButton->setEnabled(true);
-        sizePolicy1.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
-        pushButton->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
+        pushButton->setSizePolicy(sizePolicy2);
         pushButton->setFont(font);
         pushButton->setCheckable(false);
         pushButton->setFlat(false);
@@ -102,8 +109,8 @@ public:
 
         counter = new QLCDNumber(centralwidget);
         counter->setObjectName(QString::fromUtf8("counter"));
-        sizePolicy1.setHeightForWidth(counter->sizePolicy().hasHeightForWidth());
-        counter->setSizePolicy(sizePolicy1);
+        sizePolicy2.setHeightForWidth(counter->sizePolicy().hasHeightForWidth());
+        counter->setSizePolicy(sizePolicy2);
         counter->setFont(font);
 
         horizontalLayout->addWidget(counter);
@@ -113,11 +120,9 @@ public:
 
         stage = new WidgetStage(centralwidget);
         stage->setObjectName(QString::fromUtf8("stage"));
-        QSizePolicy sizePolicy2(QSizePolicy::Maximum, QSizePolicy::Maximum);
-        sizePolicy2.setHorizontalStretch(0);
-        sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(stage->sizePolicy().hasHeightForWidth());
         stage->setSizePolicy(sizePolicy2);
+        stage->setMinimumSize(QSize(0, 450));
         stage->setMouseTracking(true);
         stage->setTabletTracking(false);
         stage->setFrameShape(QFrame::Box);
