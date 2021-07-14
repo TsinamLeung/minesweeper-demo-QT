@@ -21,9 +21,9 @@ unsigned long randomUpper(long high)
 Board::Board(int row, int col, int num_mine, int clicked_x, int clicked_y)
 	: row(row), col(col), num_mine(num_mine)
 {
-	if (num_mine > (row * col - 1))
+	if (num_mine > (row * col - 9))
 	{
-		num_mine = row * col - 1;
+		num_mine = row * col - 9;
 		this->num_mine = num_mine;
 	}
 	auto mines = generateMine(row, col, num_mine, clicked_x, clicked_y);
@@ -67,27 +67,47 @@ void Board::Dug(int x, int y)
 	}
 }
 
-void Board::ToggleFlag(int& x, int& y)
+bool Board::ToggleFlag(int x, int y)
 {
+	if (_board[x][y].Discover)
+		return false;
 	_board[x][y].Flag ^= true;
+	_board[x][y].Flag ? ++flag_count : --flag_count;
+	return _board[x][y].Flag;
 }
 
-bool Board::isDiscover(int & pos_x, int & pos_y)
+int Board::CountAroundFlag(int pos_x, int pos_y)
+{
+	int cnt = 0;
+	foreach(auto p, getNearbyPosition(pos_x, pos_y))
+	{
+		cnt += _board[p.first][p.second].Flag ? 1 : 0;
+	}
+	return cnt;
+}
+
+bool Board::IsDiscover(int pos_x, int pos_y)
 {
 	return _board[pos_x][pos_y].Discover;
+}
+
+type_piece& Board::GetState(int pos_x, int pos_y)
+{
+	return _board[pos_x][pos_y].Type;
 }
 
 QList<pos> Board::generateMine(int row, int col, int num_mine, int clicked_x, int clicked_y)
 {
 	auto ret = QList<pos>();
-	num_mine = num_mine > (row * col - 1) ? row * col - 1 : num_mine;
+	num_mine = num_mine > (row * col - 9) ? row * col - 9 : num_mine;
 
 	QVector<pos> pos_pool;
 	for (int x = 0; x < row; ++x)
 	{
 		for (int y = 0; y < col; ++y)
 		{
-			bool cannot_place = (x == clicked_x && y == clicked_y);
+			// around the clicked point
+			bool cannot_place = (x >= clicked_x - 1 && x <= clicked_x + 1) && (y >= clicked_y - 1 && y <= clicked_y + 1);
 			if (cannot_place)
 			{
 				continue;
@@ -154,14 +174,36 @@ void Board::bfsExplore(int x, int y)
 			}
 			_board[cur_x][cur_y].Discover = true;
 			discoverd_blocks++;
-			//up
-			q.push_back(pos(cur_x - 1, cur_y));
-			//down
-			q.push_back(pos(cur_x + 1, cur_y));
-			//left
-			q.push_back(pos(cur_x, cur_y - 1));
-			//right
-			q.push_back(pos(cur_x, cur_y + 1));
+			// just Single layer BFS
+			if (_board[cur_x][cur_y].Type == EMPTY)
+			{
+				foreach(pos p,getNearbyPosition(cur_x, cur_y))
+				{
+					q.push_back(p);
+				}
+			}
+
 		}
 	}
+}
+
+QList<pos> Board::getNearbyPosition(int x, int y,int radius)
+{
+	auto ret = QList<pos>();
+
+	if (row > 0 && col > 0)
+	{
+		for (int i = x - radius; i <= x + radius; ++i)
+		{
+			if (i < 0 || i >= row)
+				continue;
+			for (int j = y - radius; j <= y + radius; ++j)
+			{
+				if (j < 0 || j >= col || (i == x && j == y))
+					continue;
+				ret.push_back(pos(i, j));
+			}
+		}
+	}
+	return ret;
 }

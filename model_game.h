@@ -44,8 +44,11 @@ class Board {
 public:
     Board(int row,int col,int num_mine,int clicked_x,int clicked_y);
 	void Dug(int pos_x,int pos_y);
-	void ToggleFlag(int& pos_x, int& pos_y);
-	bool isDiscover(int& pos_x, int& pos_y);
+	bool ToggleFlag(int pos_x, int pos_y);
+	int CountAroundFlag(int pos_x, int pos_y);
+	bool IsDiscover(int pos_x, int pos_y);
+	inline int FlagCount() { return flag_count; }
+	type_piece& GetState(int pos_x, int pos_y);
 	state_game state = GAMING;
 
 protected:
@@ -57,6 +60,9 @@ private:
 	int row;
 	int col;
 	int num_mine;
+	int flag_count = 0;
+	QList<pos> getNearbyPosition(int x, int y,int radius = 1);
+
 	Board() {};
     QVector<QVector<Piece>> _board;
 };

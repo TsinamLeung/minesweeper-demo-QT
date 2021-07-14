@@ -7,7 +7,10 @@
 #include <QGridLayout>
 #include <QPainter>
 #include <memory>
+#include <QLabel>
 #include "model_game.h"
+
+QList<QPair<int, int>> FindIndexInCircle(int x, int y,int border_x,int border_y, int outter_radius,int inner_radius = 0);
 
 class ButtonGame : public QFrame
 {
@@ -15,16 +18,28 @@ class ButtonGame : public QFrame
 public:
 	explicit ButtonGame(QWidget* parent = nullptr) : QFrame(parent)
 	{
-		painter.reset(new QPainter(this));
+
 		showGameButton();
 	};
-	void ShowClicked() { setFrameShadow(Sunken); }
-	void HideClicked() { setFrameShadow(Raised); }
-	inline bool isClicking() { return this->frameShadow() == Sunken; }
-
+	virtual void paintEvent(QPaintEvent *);
+	void ShowClicked() { 
+		if(!IsClicking() && CanClick())
+		setFrameShadow(Sunken); 
+	}
+	void HideClicked() { 
+		if(IsClicking())
+			setFrameShadow(Raised); 
+	}
+	void Turn(QString content = "");
+	inline bool IsClicking() { return this->frameShadow() == Sunken; }
+	inline bool CanClick() { return (this->frameShadow() == Raised || this->frameShadow() == Sunken) && !is_flag && (true/* Todo: Game State*/); }
+	inline void SetFlag(bool state) { this->is_flag = state; }
 private:
 	void showGameButton();
-	std::unique_ptr<QPainter> painter;
+	bool is_turn = false;
+	bool is_flag = false;
+	QString button_content = "";
+
 };
 
 class WidgetStage : public QFrame
@@ -71,6 +86,7 @@ private:
 	virtual void mouseReleaseEvent(QMouseEvent *event);
 	QSet<ButtonGame*> getAroundInLayout(ButtonGame* center, int radius = 1);
 	QSet<ButtonGame*> getAroundInLayout(int center_index, int radius = 1);
+	QSet<ButtonGame*> getOutlineInLayout(int center_index, int inner_radius, int outer_radius);
 	void update();
 
 	bool hold_left = false;
