@@ -56,12 +56,14 @@ void Board::Dug(int x, int y)
 		if (piece.Type == MINE)
 		{
 			this->state = DEAD;
+			gameOver();
 			return;
 		}
 		bfsExplore(x, y);
 		if (discoverd_blocks == (row * col - num_mine))
 		{
 			state = WIN;
+			gameOver();
 			return;
 		}
 	}
@@ -206,4 +208,15 @@ QList<pos> Board::getNearbyPosition(int x, int y,int radius)
 		}
 	}
 	return ret;
+}
+
+void Board::gameOver()
+{
+	foreach(const QVector<Piece>& col, _board)
+	{
+		foreach(const Piece& ele, col)
+		{
+			const_cast<Piece&>(ele).Discover = true;
+		}
+	}
 }

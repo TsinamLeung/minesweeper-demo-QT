@@ -10,6 +10,8 @@ WidgetStage::WidgetStage(QWidget* parent /*= nullptr*/)
 	SetLayout();
 	SetMapSize(row, col, num_mine);
 
+	timer.reset(new QTimer(this));
+	connect(timer.get(), &QTimer::timeout, this, &WidgetStage::TimeUP);
 	//this->setFixedWidth(100);
 	//this->setFixedHeight(100);
 
@@ -60,10 +62,26 @@ void ButtonGame::paintEvent(QPaintEvent * event)
 	}
 
 }
+
+// initialize the game, start the game
 void WidgetStage::SetMapSize(int row, int col, int num_mine)
 {
 	ResetLayout();
+
+	emit changeState("Reset");
+
+	if (timer.get())
+	{
+		timer->stop();
+	}
+	time_count = 0;
+	emit increaseTime(0);
+	emit displayFlagCount(0);
+
 	first_click = true;
+	current_state = GAMING;
+	game_board.release();
+
 	this->setFixedHeight(42 * row);
 	this->setFixedWidth(42 * col);
 	emit resizeWindow(45 * col, 180 + 45 * row);
@@ -80,6 +98,11 @@ void WidgetStage::SetMapSize(int row, int col, int num_mine)
 		}
 	}
 	first_click = true;
+}
+
+void WidgetStage::SetMapSize()
+{
+	SetMapSize(row, col, num_mine);
 }
 
 void WidgetStage::SetDifficult()
@@ -99,9 +122,14 @@ void WidgetStage::SetDifficult()
 	}
 }
 
+void WidgetStage::TimeUP()
+{
+	emit increaseTime(++time_count);
+}
+
 void WidgetStage::mouseMoveEvent(QMouseEvent * event)
 {
-	if (hold_left | hold_right)
+	if ((hold_left || hold_right) && current_state == GAMING)
 	{
 		const auto& element = childAt(event->pos());
 		if (element)
@@ -148,11 +176,22 @@ void WidgetStage::mouseMoveEvent(QMouseEvent * event)
 	// update view here
 }
 
-void WidgetStage::mousePressEvent(QMouseEvent * event)
+void WidgetStage::mousePressEvent(QMouseEvent* event)
 {
-	qDebug() << "Press: " << event->button();
+	//qDebug() << "Press: " << event->button();
 	const auto& element = childAt(event->pos());
-	if (element)
+
+	switch (event->button())
+	{
+	case Qt::LeftButton:
+		hold_left = true;
+		break;
+	case Qt::RightButton:
+		hold_right = true;
+		break;
+	}
+
+	if (element && current_state == GAMING)
 	{
 		auto btn = dynamic_cast<ButtonGame*>(element);
 		if (!btn)
@@ -163,72 +202,79 @@ void WidgetStage::mousePressEvent(QMouseEvent * event)
 		{
 			btn->ShowClicked();
 		}
+		if (hold_left && hold_right)
+		{
+			foreach(ButtonGame* a, getAroundInLayout(dynamic_cast<ButtonGame*>(element)))
+			{
+				if (a->CanClick())
+				{
+					a->ShowClicked();
+				}
+			}
+		}
 	}
-	switch (event->button())
-	{
-	case Qt::LeftButton:
-		hold_left = true;
-		break;
-	case Qt::RightButton:
-		hold_right = true;
-		break;
-	}
+
 }
 
 void WidgetStage::mouseReleaseEvent(QMouseEvent * event)
 {
-	qDebug() << "Release: " << event->button();
+	//qDebug() << "Release: " << event->button();
 	const auto& element = childAt(event->pos());
 	if (element)
 	{
-		auto btn = dynamic_cast<ButtonGame*>(element);
-		if (!btn)
+		if (current_state == GAMING)
 		{
-			return;
-		}
-		foreach (ButtonGame* c, getAroundInLayout(btn))
-		{
-			c->HideClicked();
-		}
-		int index = layout->indexOf(element);
-		int pos_x = index / col;
-		int pos_y = index % col;
 
-		if (hold_left && hold_right)
-		{
-			if (game_board.get())
+			auto btn = dynamic_cast<ButtonGame*>(element);
+			if (!btn)
 			{
-				int count_flag = game_board->CountAroundFlag(pos_x, pos_y);
-				type_piece state = game_board->GetState(pos_x, pos_y);
-				if (count_flag >= (int)state)
+				return;
+			}
+			foreach(ButtonGame* c, getAroundInLayout(btn))
+			{
+				c->HideClicked();
+			}
+			int index = layout->indexOf(element);
+			int pos_x = index / col;
+			int pos_y = index % col;
+
+			if (hold_left && hold_right)
+			{
+				if (game_board.get())
 				{
-					foreach(auto dug_pos, FindIndexInCircle(pos_x, pos_y, row, col, 1, 0))
+					int count_flag = game_board->CountAroundFlag(pos_x, pos_y);
+					type_piece state = game_board->GetState(pos_x, pos_y);
+					if (count_flag >= (int)state)
 					{
-						game_board->Dug(dug_pos.first, dug_pos.second);
+						foreach(auto dug_pos, FindIndexInCircle(pos_x, pos_y, row, col, 1, 0))
+						{
+							game_board->Dug(dug_pos.first, dug_pos.second);
+						}
 					}
 				}
 			}
-		}
-		else if (hold_left)
-		{
+			else if (hold_left)
+			{
 
-			if (first_click)
-			{
-				game_board.reset(new Board(row, col, num_mine, pos_x, pos_y));
-				first_click = false;
-			}
-			else
-			{
-				game_board->Dug(pos_x, pos_y);
-			}
+				if (first_click)
+				{
+					timer->start(1000);
+					game_board.reset(new Board(row, col, num_mine, pos_x, pos_y));
+					first_click = false;
+				}
+				else
+				{
+					game_board->Dug(pos_x, pos_y);
+				}
 
-		}
-		else if (hold_right)
-		{
-			if (game_board.get())
+			}
+			else if (hold_right)
 			{
-				btn->SetFlag(game_board->ToggleFlag(pos_x, pos_y));
-				btn->setFrameShadow(Raised);
+				if (game_board.get())
+				{
+					btn->SetFlag(game_board->ToggleFlag(pos_x, pos_y));
+					btn->setFrameShadow(Raised);
+				}
 			}
 		}
 		update();
@@ -278,6 +324,22 @@ QSet<ButtonGame*> WidgetStage::getAroundInLayout(int center_index, int radius /*
 
 void WidgetStage::update()
 {
+	//qDebug() << "Current State : " << current_state;
+	if (!game_board.get())
+		return;
+	
+	this->current_state = game_board->state;
+	if (current_state == WIN)
+	{
+		emit changeState("You Won!!");
+		timer->stop();
+	}
+	else if (current_state == DEAD)
+	{
+		emit changeState("You lose!!");
+		timer->stop();
+	}
+	emit displayFlagCount(game_board->FlagCount());
 
 	for (int i = 0; i < layout->count(); ++i)
 	{
@@ -315,7 +377,7 @@ void WidgetStage::update()
 QList<QPair<int, int>> FindIndexInCircle(int x, int y, int border_x, int border_y, int outter_radius, int inner_radius)
 {
 	auto ret = QList<QPair<int, int>>();
-	int x_left_inner_bound = x - inner_radius;
+
 	for (int i = x - outter_radius; i <= x + outter_radius; ++i)
 	{
 		if (i < 0 || i >= border_x)

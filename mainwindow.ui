@@ -75,10 +75,20 @@
           <family>Lucida Sans</family>
          </font>
         </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(85, 170, 0);
+color: rgb(85, 85, 0);</string>
+        </property>
+        <property name="smallDecimalPoint">
+         <bool>false</bool>
+        </property>
+        <property name="segmentStyle">
+         <enum>QLCDNumber::Filled</enum>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="resetButton">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -94,7 +104,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Reset and Status Displaying</string>
+         <string>Reset</string>
         </property>
         <property name="checkable">
          <bool>false</bool>
@@ -120,6 +130,22 @@
           <family>Lucida Sans</family>
          </font>
         </property>
+        <property name="autoFillBackground">
+         <bool>false</bool>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color: rgb(37, 37, 37);
+color: rgb(255, 64, 30);</string>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Sunken</enum>
+        </property>
+        <property name="lineWidth">
+         <number>2</number>
+        </property>
        </widget>
       </item>
      </layout>
@@ -134,7 +160,7 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>0</width>
+        <width>200</width>
         <height>450</height>
        </size>
       </property>
@@ -220,7 +246,10 @@
    <header>widget_stage.h</header>
    <container>1</container>
    <slots>
+    <signal>displayFlagCount(int)</signal>
+    <signal>increaseTime(int)</signal>
     <slot>SetDifficult()</slot>
+    <slot>SetMapSize()</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -253,8 +282,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>288</x>
-     <y>267</y>
+     <x>3</x>
+     <y>333</y>
     </hint>
    </hints>
   </connection>
@@ -269,8 +298,8 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>288</x>
-     <y>267</y>
+     <x>3</x>
+     <y>333</y>
     </hint>
    </hints>
   </connection>
@@ -285,8 +314,56 @@
      <y>-1</y>
     </hint>
     <hint type="destinationlabel">
-     <x>288</x>
-     <y>267</y>
+     <x>3</x>
+     <y>333</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>resetButton</sender>
+   <signal>released()</signal>
+   <receiver>stage</receiver>
+   <slot>SetMapSize()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>256</x>
+     <y>43</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>290</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stage</sender>
+   <signal>displayFlagCount(int)</signal>
+   <receiver>counter</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>198</x>
+     <y>185</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>404</x>
+     <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stage</sender>
+   <signal>increaseTime(int)</signal>
+   <receiver>timer</receiver>
+   <slot>display(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>102</x>
+     <y>290</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>110</x>
+     <y>43</y>
     </hint>
    </hints>
   </connection>

@@ -2,7 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-
+#include "ui_mainwindow.h"
+#include "widget_stage.h"
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -19,7 +20,11 @@ public slots:
         this->setMinimumWidth(w);
         this->setMinimumHeight(h);
 		this->resize(0, 0);
-    }
+	}
+	void setState(QString str)
+	{
+		this->ui->resetButton->setText(str);
+	}
 private:
     Ui::MainWindow *ui;
 };

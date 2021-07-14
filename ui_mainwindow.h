@@ -37,7 +37,7 @@ public:
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
     QLCDNumber *timer;
-    QPushButton *pushButton;
+    QPushButton *resetButton;
     QLCDNumber *counter;
     WidgetStage *stage;
     QMenuBar *menubar;
@@ -93,25 +93,35 @@ public:
         QFont font;
         font.setFamily(QString::fromUtf8("Lucida Sans"));
         timer->setFont(font);
+        timer->setStyleSheet(QString::fromUtf8("background-color: rgb(85, 170, 0);\n"
+"color: rgb(85, 85, 0);"));
+        timer->setSmallDecimalPoint(false);
+        timer->setSegmentStyle(QLCDNumber::Filled);
 
         horizontalLayout->addWidget(timer);
 
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
-        pushButton->setEnabled(true);
-        sizePolicy2.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
-        pushButton->setSizePolicy(sizePolicy2);
-        pushButton->setFont(font);
-        pushButton->setCheckable(false);
-        pushButton->setFlat(false);
+        resetButton = new QPushButton(centralwidget);
+        resetButton->setObjectName(QString::fromUtf8("resetButton"));
+        resetButton->setEnabled(true);
+        sizePolicy2.setHeightForWidth(resetButton->sizePolicy().hasHeightForWidth());
+        resetButton->setSizePolicy(sizePolicy2);
+        resetButton->setFont(font);
+        resetButton->setCheckable(false);
+        resetButton->setFlat(false);
 
-        horizontalLayout->addWidget(pushButton);
+        horizontalLayout->addWidget(resetButton);
 
         counter = new QLCDNumber(centralwidget);
         counter->setObjectName(QString::fromUtf8("counter"));
         sizePolicy2.setHeightForWidth(counter->sizePolicy().hasHeightForWidth());
         counter->setSizePolicy(sizePolicy2);
         counter->setFont(font);
+        counter->setAutoFillBackground(false);
+        counter->setStyleSheet(QString::fromUtf8("background-color: rgb(37, 37, 37);\n"
+"color: rgb(255, 64, 30);"));
+        counter->setFrameShape(QFrame::StyledPanel);
+        counter->setFrameShadow(QFrame::Sunken);
+        counter->setLineWidth(2);
 
         horizontalLayout->addWidget(counter);
 
@@ -122,7 +132,7 @@ public:
         stage->setObjectName(QString::fromUtf8("stage"));
         sizePolicy2.setHeightForWidth(stage->sizePolicy().hasHeightForWidth());
         stage->setSizePolicy(sizePolicy2);
-        stage->setMinimumSize(QSize(0, 450));
+        stage->setMinimumSize(QSize(200, 450));
         stage->setMouseTracking(true);
         stage->setTabletTracking(false);
         stage->setFrameShape(QFrame::Box);
@@ -159,8 +169,11 @@ public:
         QObject::connect(actionEasy, SIGNAL(triggered()), stage, SLOT(SetDifficult()));
         QObject::connect(actionMiddle, SIGNAL(triggered()), stage, SLOT(SetDifficult()));
         QObject::connect(actionHard, SIGNAL(triggered()), stage, SLOT(SetDifficult()));
+        QObject::connect(resetButton, SIGNAL(released()), stage, SLOT(SetMapSize()));
+        QObject::connect(stage, SIGNAL(displayFlagCount(int)), counter, SLOT(display(int)));
+        QObject::connect(stage, SIGNAL(increaseTime(int)), timer, SLOT(display(int)));
 
-        pushButton->setDefault(false);
+        resetButton->setDefault(false);
 
 
         QMetaObject::connectSlotsByName(MainWindow);
@@ -174,7 +187,7 @@ public:
         actionHard->setText(QApplication::translate("MainWindow", "Hard", nullptr));
         actionCustom->setText(QApplication::translate("MainWindow", "Custom", nullptr));
         actionQuit->setText(QApplication::translate("MainWindow", "Quit", nullptr));
-        pushButton->setText(QApplication::translate("MainWindow", "Reset and Status Displaying", nullptr));
+        resetButton->setText(QApplication::translate("MainWindow", "Reset", nullptr));
         menuOptions->setTitle(QApplication::translate("MainWindow", "Options", nullptr));
         menuLevel->setTitle(QApplication::translate("MainWindow", "Level", nullptr));
     } // retranslateUi

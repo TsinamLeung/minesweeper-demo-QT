@@ -62,7 +62,7 @@ private:
 	int num_mine;
 	int flag_count = 0;
 	QList<pos> getNearbyPosition(int x, int y,int radius = 1);
-
+	void gameOver();
 	Board() {};
     QVector<QVector<Piece>> _board;
 };

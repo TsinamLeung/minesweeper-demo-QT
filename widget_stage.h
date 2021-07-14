@@ -8,6 +8,7 @@
 #include <QPainter>
 #include <memory>
 #include <QLabel>
+#include <QTimer>
 #include "model_game.h"
 
 QList<QPair<int, int>> FindIndexInCircle(int x, int y,int border_x,int border_y, int outter_radius,int inner_radius = 0);
@@ -18,7 +19,6 @@ class ButtonGame : public QFrame
 public:
 	explicit ButtonGame(QWidget* parent = nullptr) : QFrame(parent)
 	{
-
 		showGameButton();
 	};
 	virtual void paintEvent(QPaintEvent *);
@@ -32,7 +32,7 @@ public:
 	}
 	void Turn(QString content = "");
 	inline bool IsClicking() { return this->frameShadow() == Sunken; }
-	inline bool CanClick() { return (this->frameShadow() == Raised || this->frameShadow() == Sunken) && !is_flag && (true/* Todo: Game State*/); }
+	inline bool CanClick() { return (this->frameShadow() == Raised || this->frameShadow() == Sunken) && !is_flag; }
 	inline void SetFlag(bool state) { this->is_flag = state; }
 private:
 	void showGameButton();
@@ -74,12 +74,18 @@ public:
 	}
 signals:
 	void resizeWindow(int w, int h);
-	public slots:
+	void displayFlagCount(int count);
+	void increaseTime(int count);
+	void changeState(QString);
+public slots:
 	void SetMapSize(int row, int col, int num_mine);
+	void SetMapSize();
 	void SetDifficult();
+	void TimeUP();
 private:
 	std::unique_ptr<QGridLayout> layout;
 	std::unique_ptr<Board> game_board;
+	std::unique_ptr<QTimer> timer;
 
 	virtual void mouseMoveEvent(QMouseEvent *event);
 	virtual void mousePressEvent(QMouseEvent *event);
@@ -87,6 +93,8 @@ private:
 	QSet<ButtonGame*> getAroundInLayout(ButtonGame* center, int radius = 1);
 	QSet<ButtonGame*> getAroundInLayout(int center_index, int radius = 1);
 	QSet<ButtonGame*> getOutlineInLayout(int center_index, int inner_radius, int outer_radius);
+	
+	
 	void update();
 
 	bool hold_left = false;
@@ -96,6 +104,9 @@ private:
 	int row = 9;
 	int col = 9;
 	int num_mine = 10;
+	int time_count = 0;
+
+	state_game current_state = GAMING;
 };
 
 #endif // WIDGET_STAGE_H
