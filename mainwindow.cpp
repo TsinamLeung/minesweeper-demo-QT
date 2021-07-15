@@ -20,8 +20,13 @@ void MainWindow::difficultDialog()
 {
 	bool success;
 	int row, col, num_mine;
+
+
 	DifficultDialog::GetCustomDiffcult(this, row, col, num_mine, &success);
-	emit setMap(row, col, num_mine);
+	if (success)
+	{
+		emit setMap(row, col, num_mine);
+	}
 }
 
 DifficultDialog::DifficultDialog(QWidget *parent /* = nullptr */) : QDialog(parent)
